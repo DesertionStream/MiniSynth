@@ -33,3 +33,12 @@ Résultat : `build/MiniSynth_artefacts/Release/VST3/Mini Synthe.vst3`
   Les accords défilent en boucle ; les modes (gammes) sont arpégés note par note.
 - **Préréglages** (liste de programmes de l'hôte et menu du plugin) : Extrait, Pluck, Cloche, Basse, Cyberpunk, Voix, Nappe.
 - Tous les paramètres sont automatisables dans Live.
+
+## Nouveautés
+- **Source des notes** : « Accords du plugin » ou « Notes MIDI jouées ». En mode MIDI, l'arpège joue les notes que votre clip
+  (piano roll d'Ableton) ou votre clavier envoie : les notes tenues sont arpégées, l'accord le plus grave sert de base.
+  Placez le plugin sur une **piste MIDI** et dessinez vos notes dans le clip.
+- **Piano roll intégré** (onglet « Piano roll ») : une mesure de 16 doubles croches, 37 lignes autour de la fondamentale
+  de l'accord. Cliquez/glissez pour poser ou retirer des notes ; elles se transposent avec chaque accord.
+- **Réglages mémorisés** : enregistrés dans le projet Live (réglages + piano roll). Boutons « Sauver… / Charger… » pour des
+  presets `.msynth`, et « Définir par défaut » pour les retrouver à chaque nouvelle instance.

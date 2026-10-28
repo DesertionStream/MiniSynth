@@ -32,6 +32,18 @@ public:
 
     juce::AudioProcessorValueTreeState apvts;
 
+    // piano-roll pattern: one 64-bit mask per 16th step; bit r = semitone offset (r - 12) from the chord root
+    static constexpr int rollRows = 37;
+    std::array<std::atomic<juce::uint64>, 16> roll;
+    std::atomic<int> currentStep { -1 };
+    void setRollStep (int step, juce::uint64 mask);
+    void fillRollFromAuto (int chord);
+    void clearRoll();
+    bool saveStateTo (const juce::File&);
+    bool loadStateFrom (const juce::File&);
+    void saveAsDefault();
+    static juce::File settingsDir();
+
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createLayout();
     float get (const char* id) const { return apvts.getRawParameterValue (id)->load(); }
@@ -39,6 +51,12 @@ private:
     void triggerNote (int midi, float vel, bool arp, int arpSamples);
     void arpStep (juce::int64 stepIdx);
     void releaseArpVoices();
+    void syncRollToState();
+    void loadRollFromState();
+    static int buildNotes (int root, const std::vector<int>& iv, int octs, int* out, int cap);
+    static int patternIdx (int kind, int len, juce::int64 step, juce::Random& r);
+    std::vector<int> heldMidi;
+    int arpSrc = 0;
 
     static constexpr int numVoices = 24;
     std::array<ms::Voice, numVoices> voices;
