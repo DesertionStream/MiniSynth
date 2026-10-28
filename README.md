@@ -25,13 +25,13 @@ Résultat : `build/MiniSynth_artefacts/Release/VST3/Mini Synthe.vst3`
   Ajouter « Mini Synthe » sur une piste MIDI (liste *Plug-ins*, catégorie Instruments).
 
 ## Utilisation
-- Joue au clavier MIDI normalement (24 voix).
+- Placer le plugin sur une **piste MIDI**. Par défaut l'arpège joue les notes MIDI du clip ou du clavier (source « Notes MIDI jouées ») ; choisissez « Accords du plugin » pour l'arpège automatique.
 - **Arpège** : activé par défaut. Avec *Sync hôte* activé, il suit le tempo et la position de lecture de Live (il joue quand
   Live est en lecture). Désactivez *Sync hôte* pour qu'il tourne librement au **Tempo** du plugin (50 à 300 BPM).
 - **Accords** : 4 accords de N mesures chacun ; pour chacun, choisissez la **note** (les 12) et le **mode** séparément
   (majeur, mineur, 7, maj7, min7, 9, dorien, phrygien, lydien, mixolydien, éolien, locrien, pentatoniques, blues…).
   Les accords défilent en boucle ; les modes (gammes) sont arpégés note par note.
-- **Préréglages** (liste de programmes de l'hôte et menu du plugin) : Extrait, Pluck, Cloche, Basse, Cyberpunk, Voix, Nappe.
+- **Préréglages** (menu en haut du plugin ; ils ne sont plus appliqués par l'hôte, pour ne jamais écraser vos réglages au rechargement) : Extrait, Pluck, Cloche, Basse, Cyberpunk, Voix, Nappe.
 - Tous les paramètres sont automatisables dans Live.
 
 ## Nouveautés

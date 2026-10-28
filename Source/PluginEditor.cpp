@@ -69,9 +69,9 @@ void PianoRoll::mouseDrag (const MouseEvent& e) { apply (e); }
 // ------------------------------------------------------------------ editor
 MiniSynthEditor::MiniSynthEditor (MiniSynthProcessor& p) : AudioProcessorEditor (&p), proc (p), roll (p)
 {
-    for (int i = 0; i < proc.getNumPrograms(); ++i) presetBox.addItem (proc.getProgramName (i), i + 1);
-    presetBox.setSelectedId (proc.getCurrentProgram() + 1, dontSendNotification);
-    presetBox.onChange = [this] { proc.setCurrentProgram (presetBox.getSelectedId() - 1); };
+    for (int i = 0; i < proc.getNumPresets(); ++i) presetBox.addItem (proc.getPresetName (i), i + 1);
+    presetBox.setSelectedId (proc.getCurrentPreset() + 1, dontSendNotification);
+    presetBox.onChange = [this] { proc.applyPreset (presetBox.getSelectedId() - 1); };
     addAndMakeVisible (presetBox); addAndMakeVisible (saveBtn); addAndMakeVisible (loadBtn); addAndMakeVisible (defBtn);
     saveBtn.onClick = [this] {
         chooser = std::make_unique<FileChooser> ("Sauver le preset", MiniSynthProcessor::settingsDir(), "*.msynth");

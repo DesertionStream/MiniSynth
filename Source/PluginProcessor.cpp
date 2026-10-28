@@ -34,7 +34,7 @@ AudioProcessorValueTreeState::ParameterLayout MiniSynthProcessor::createLayout()
     p.push_back (std::make_unique<AudioParameterBool> (PID { "sync", 1 }, "Sync hote (tempo + lecture)", true));
     F ("bpm", "Tempo (si sync off)", 50.f, 300.f, 158.f, 1.f, 1.f);
     p.push_back (std::make_unique<AudioParameterChoice> (PID { "pattern", 1 }, "Motif", StringArray { "Montee-descente", "Montee", "Descente", "Sauts", "Aleatoire", "Piano roll (manuel)" }, 0));
-    p.push_back (std::make_unique<AudioParameterChoice> (PID { "arpSrc", 1 }, "Source de l'arpege", StringArray { "Accords du plugin", "Notes MIDI jouees" }, 0));
+    p.push_back (std::make_unique<AudioParameterChoice> (PID { "arpSrc", 1 }, "Source de l'arpege", StringArray { "Accords du plugin", "Notes MIDI jouees" }, 1));
     p.push_back (std::make_unique<AudioParameterInt> (PID { "octs", 1 }, "Octaves", 1, 3, 2));
     F ("gate", "Duree note", .2f, 1.6f, 1.1f);
     p.push_back (std::make_unique<AudioParameterInt> (PID { "bars", 1 }, "Mesures par accord", 1, 4, 2));
@@ -218,7 +218,7 @@ bool MiniSynthProcessor::saveStateTo (const File& f)
 bool MiniSynthProcessor::loadStateFrom (const File& f)
 {
     if (auto xml = parseXML (f))
-        if (xml->hasTagName (apvts.state.getType())) { apvts.replaceState (ValueTree::fromXml (*xml)); loadRollFromState(); return true; }
+        if (xml->hasTagName (apvts.state.getType())) { apvts.replaceState (ValueTree::fromXml (*xml)); loadRollFromState(); currentProgram = jlimit (0, numPresets - 1, (int) apvts.state.getProperty ("preset", 0)); return true; }
     return false;
 }
 void MiniSynthProcessor::saveAsDefault() { saveStateTo (settingsDir().getChildFile ("default.xml")); }
@@ -287,12 +287,17 @@ void MiniSynthProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& m
     midi.clear();
 }
 
-int MiniSynthProcessor::getNumPrograms() { return numPresets; }
-const String MiniSynthProcessor::getProgramName (int i) { return (i >= 0 && i < numPresets) ? presets[i].name : String(); }
-void MiniSynthProcessor::setCurrentProgram (int i)
+// The host sees a single program: some hosts (Live included) call setCurrentProgram() when a project loads, which would
+// overwrite the saved settings with a factory preset. Factory presets are applied only from the plugin's own menu.
+int MiniSynthProcessor::getNumPrograms() { return 1; }
+const String MiniSynthProcessor::getProgramName (int) { return "Mini Synthe"; }
+void MiniSynthProcessor::setCurrentProgram (int) {}
+int MiniSynthProcessor::getNumPresets() { return numPresets; }
+const String MiniSynthProcessor::getPresetName (int i) { return (i >= 0 && i < numPresets) ? presets[i].name : String(); }
+void MiniSynthProcessor::applyPreset (int i)
 {
     if (i < 0 || i >= numPresets) return;
-    currentProgram = i; const auto& q = presets[i];
+    currentProgram = i; apvts.state.setProperty ("preset", i, nullptr); const auto& q = presets[i];
     auto set = [this] (const char* id, float v) { if (auto* p = apvts.getParameter (id)) p->setValueNotifyingHost (p->convertTo0to1 (v)); };
     set ("wave", (float) q.wave); set ("uni", (float) q.uni); set ("det", q.det); set ("sub", q.sub); set ("cut", q.cut); set ("res", q.res);
     set ("fenv", q.fenv); set ("fdec", q.fdec); set ("a", q.a); set ("d", q.d); set ("s", q.s); set ("r", q.r); set ("chor", q.chor);
@@ -307,7 +312,7 @@ void MiniSynthProcessor::getStateInformation (MemoryBlock& dest)
 void MiniSynthProcessor::setStateInformation (const void* data, int size)
 {
     if (auto xml = getXmlFromBinary (data, size))
-        if (xml->hasTagName (apvts.state.getType())) { apvts.replaceState (ValueTree::fromXml (*xml)); loadRollFromState(); }
+        if (xml->hasTagName (apvts.state.getType())) { apvts.replaceState (ValueTree::fromXml (*xml)); loadRollFromState(); currentProgram = jlimit (0, numPresets - 1, (int) apvts.state.getProperty ("preset", 0)); }
 }
 
 AudioProcessorEditor* MiniSynthProcessor::createEditor() { return new MiniSynthEditor (*this); }

@@ -22,8 +22,10 @@ public:
     double getTailLengthSeconds() const override { return 3.0; }
 
     int getNumPrograms() override;
-    int getCurrentProgram() override { return currentProgram; }
+    int getCurrentProgram() override { return 0; }
+    int getCurrentPreset() const { return currentProgram; }
     void setCurrentProgram (int i) override;
+    int getNumPresets(); const juce::String getPresetName (int i); void applyPreset (int i);
     const juce::String getProgramName (int i) override;
     void changeProgramName (int, const juce::String&) override {}
 
